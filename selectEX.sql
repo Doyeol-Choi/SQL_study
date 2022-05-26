@@ -63,187 +63,6 @@ INSERT INTO SALGRADE VALUES (5,3001,9999);
 COMMIT;
 
 
------------------------------------------------------------------------
-DESC EMPLOYEE;
-
-SELECT sysdate FROM dual;
-
-SELECT * FROM employee;
-
-SELECT eno, ename, job, manager, hiredate, salary, commission, dno FROM green.employee;
-
-SELECT ename, salary, salary*12 FROM employee;
-
-SELECT ename, salary, salary*12+commission FROM employee;
-
-SELECT ename, salary, salary*12+NVL(commission,0) AS "연 봉" FROM employee;
-
-SELECT DNO FROM employee;
-
-SELECT DISTINCT DNO FROM employee;
-   
-   SELECT ename,salary FROM employee WHERE ename='SMITH';
--- 알고싶다, 이름과 급여를    사원테이블에 있는  이름이 스미스인 사람
-
-SELECT * FROM employee WHERE salary <= 1500;
-
-SELECT * 
-FROM employee 
-WHERE ename!='SMITH';
-
-SELECT * FROM employee WHERE  NOT hiredate <= '1981/05/31' OR salary >= 1200;
-
--- 급여가 1000에서 1500 사이인 사원을 조회  (BETWEEN A AND B : A와 B사이의 값)
-SELECT * FROM employee WHERE salary>=1000 AND salary<=1500;
-
-SELECT * FROM employee WHERE salary BETWEEN 1000 AND 1500;
-
--- 급여가 1000 미만이거나 1500초과인 사원을 조회
-SELECT * FROM employee WHERE salary<1000 OR salary>1500;
-SELECT * FROM employee WHERE NOT(salary>=1000 AND salary<=1500);
-
-SELECT * FROM employee WHERE  salary NOT BETWEEN 1000 AND 1500;
-
--- 1981년도에 입사한 사원의 정보를 조회  => SQL
-SELECT * FROM employee WHERE hiredate BETWEEN '1981/01/01' AND '1981/12/31';
-
--- 커미션이 300이거나 500이거나 1400인 사원을 조회  (IN 조건중에 일치하는 것)
-SELECT * FROM employee WHERE commission=300 OR commission=500 OR commission=1400;
-SELECT * FROM employee WHERE commission IN (300,500,1400);
-
---  (IS NULL  값이 null인 것)
-SELECT * FROM employee WHERE commission IS NULL;
-
-SELECT * FROM employee WHERE commission IS NOT NULL;
-
--- 문자열 일부 일치  LIKE
-SELECT * FROM employee WHERE ename LIKE '%A%';
- -- %는 글자 개수도 모를때
- --  _는 글자 개수는 알때
-SELECT * FROM employee WHERE ename LIKE '__A%';
- 
-SELECT * FROM employee 
-WHERE salary>=1200
-ORDER BY job DESC, salary ASC;
-
-------------------------------------------------------------------------------------------------------
-SELECT ename, hiredate, to_char(hiredate,'YY-MM'), to_char(hiredate, 'YYYY/MM/DD Day') FROM employee;
-
-SELECT ename, hiredate FROM employee WHERE hiredate = to_date(19811117, 'YYYYMMDD');
-
-SELECT ASCII('t'), ASCIISTR('밝'), CHR(84), UNISTR('\BC1D') FROM dual;
-
--- 글자수 출력 LENGTHC()
-SELECT LENGTHC('오라클') FROM dual;
-
--- 문자열 결합 CONCAT() / 'A' || 'B'
-SELECT CONCAT('기초기술','활용'), '기초'||'기술'||'활용' FROM dual;
-
-SELECT ename|| ':' ||job FROM employee;
-
--- INSTR() 주어진 문장에서 내가 찾는 단어가 몇번째 있는지 찾는 함수, 아래는 10번째 이후에 있는 문자를 찾아 출력
-SELECT INSTR('자바에서 문자는 string이고 자바스크립트에서 문자는 let이다.', '문자', 10) FROM dual;
-
--- 소문자로 변경 LOWER()
-SELECT LOWER('StuDentName') FROM dual;
-
--- 대문자로 변경 UPPER()
-SELECT UPPER('stuDentName') FROM dual;
-
--- 첫글자만 대문자 나머지 소문자 INITCAP()
-SELECT INITCAP('stuDentName') FROM dual;
-
--- 문장에 있는 문자열 치환 REPLACE('문장','원래문자열','바꿀문자열')
-SELECT REPLACE('자바에서 문자는 string이고 자바스크립트에서 문자는 let이다.', '자바', 'JAVA') FROM dual;
-
--- 한글에선 쓰기 적합하지 않은 TRANSLATE() 아래에선 이 => A, 것 => B로 치환 된듯하다
-SELECT TRANSLATE('자바에서 문자는 string이고 자바스크립트에서 문자는 let이다.', '자바', 'JV') FROM dual;
-SELECT TRANSLATE('이것이 Oracle이다.', '이것', 'AB') FROM dual;
-
--- 조건절에서 활용 하기
-SELECT * FROM employee WHERE ename = UPPER('scott');
-SELECT * FROM employee WHERE INITCAP(ename) = 'Scott';
-
--- 문장 자르기 SUBSTR('문장', n, m) n번째 문자부터 m개 문자 자르기
-SELECT SUBSTR('응용sw기초기술활용', 5, 4) FROM dual;
-
--- 바이트 단위 거꾸로 뒤집기
-SELECT REVERSE('Python') FROM dual;
-
--- SELECT FROM dual; 복사용 더미
--- 글자수 채우기 LPAD('문자열', 채울글자수, '채울문자') - 문자 왼쪽에 채우기
-SELECT LPAD('java', 9, '-') FROM dual;
-
--- 글자수 채우기 RPAD('문자열', 채울글자수, '채울문자') - 문자 오른쪽에 채우기
-SELECT RPAD('자바', 9, '-') FROM dual;
-
--- LTRIM() 왼쪽 공백 or 왼쪽 특정 문자 제거
-SELECT LTRIM('        자바        ') FROM dual;
-SELECT LTRIM('ㅋㅋㅋㅋㅋㅋ  재밌다', 'ㅋ') FROM dual;
-
--- RTRIM() 오른쪽 공백 or 오른쪽 특정 문자 제거
-SELECT RTRIM('        자바        ') FROM dual;
-SELECT LTRIM('ㅋㅋㅋㅋㅋㅋ  재밌다 ㅋㅋㅋㅋㅋㅋ', 'ㅋ') FROM dual;
-
--- TRIM() 안에 명령어에 따라 문자열 제거 LEADING=앞쪽 TRAILING=뒷쪽 BOTH=양쪽
-SELECT TRIM(LEADING '*' FROM '***** 그린 아카데미 *****') FROM dual;
-SELECT TRIM(TRAILING '*' FROM '***** 그린 아카데미 *****') FROM dual;
-SELECT TRIM(BOTH '*' FROM '***** 그린 아카데미 *****') FROM dual;
-
-
-SELECT * FROM employee WHERE SUBSTR(ename, -1, 1) = 'N';
-SELECT * FROM employee WHERE SUBSTR(ename, -2, 2) = 'EN';
-
--- 소수점 CEIL()올림 FLOOR()내림 ROUND()반올림
-SELECT CEIL(3.14), FLOOR(3.14), ROUND(3.14) FROM dual;
-
--- TRUNC(소수점숫자, n) 소수점 n번째까지 이후 버림
-SELECT TRUNC(12345.12345, 2) FROM dual;
-SELECT TRUNC(12345.12345, -2) FROM dual;
-
--- 날짜 계산
-SELECT ADD_MONTHS('2022/05/24', 5) FROM dual;
-SELECT ADD_MONTHS('2022/05/24', -7) FROM dual;
-
-SELECT to_DATE('2022/05/24') + 5 FROM dual;
-
-SELECT LAST_DAY('2022/05/24') FROM dual;
-
--- 24일 이후 목요일을 출력
-SELECT NEXT_DAY('2022/05/24', '목요일') FROM dual;
-
-SELECT ROUND(TO_DATE('2022/05/24'), 'CC') FROM dual;
-SELECT ROUND(TO_DATE('2022/05/24'), 'YEAR') FROM dual;
--- Q는 분기
-SELECT ROUND(TO_DATE('2022/05/24'), 'Q') FROM dual;
--- DY 요일은 시작인 일요일 수요일 기준 목요일부터 올림
-SELECT ROUND(TO_DATE('2022/05/24'), 'DY') FROM dual;
-
--- NVL(컬럼, 값) 컬럼이 null이라면 값으로 대체
-SELECT ename, salary, commission, NVL(commission, '0') FROM employee;
-
--- NVL2(컬럼, 값1, 값2)컬럼이 null이 아니면 값1 null이면 값2 출력
-SELECT NVL2(commission, salary*12+commission, salary*12) FROM employee;
-
--- DECODE switch~case문과 비슷 DECODE(컬럼, 조건1, 값1, 조건2, 값2, ...)
-SELECT ename, dno, DECODE(dno, 10, '교육부', 20, '총무부', 30, '재정부') FROM employee;
--- 줄바꿈 활용 앞에 조건이 없으면 default값으로 보면 될듯 하다
-SELECT ename, dno, DECODE(dno, 10, '교육부',
-                               20, '총무부',
-                               30, '재정부',
-                               40, '복지부',
-                               '노동부') AS "부서명" FROM employee;
-
--- CASE WHEN~THEN END if~else 조건문과 비슷 CASE WHEN 조건 THEN 값 END
-SELECT ename, dno, CASE WHEN dno=10 THEN '교육부' WHEN dno=20 THEN '총무부' WHEN dno=30 THEN '재정부' WHEN dno=40 THEN '복지부' ELSE '노동부' END FROM employee;
--- 줄바꿈 활용해 보기 편하게
-SELECT ename, dno, CASE WHEN dno=10 THEN '교육부'
-                        WHEN dno=20 THEN '총무부'
-                        WHEN dno=30 THEN '재정부'
-                        WHEN dno=40 THEN '복지부'
-                        ELSE '노동부' END FROM employee;
-
-
 -----------------------------------------------------------------------------------------
 -- 연습문제
 SELECT * FROM employee;
@@ -340,61 +159,6 @@ SELECT ename, job, DECODE(job, 'ANAIYST', salary+200,
                                salary) AS "인상된 급여" FROM employee;
                                
                                
-------------------------------------------------------------------------------------------
--- 합, 평균, 최대, 최소
-SELECT SUM(salary) AS "급여 총합",
-       TRUNC(AVG(salary)) AS "평균 급여",
-       MAX(salary) AS "최대 급여",
-       MIN(salary) AS "최소 급여" FROM employee;
-       
--- 행 갯수를 구하는 COUNT()       
-SELECT COUNT(ename) FROM employee;
-
-SELECT COUNT(*) FROM employee;
-
-SELECT COUNT(commission) AS "커미션 받는 사원" FROM employee;
-
-SELECT SUM(commission) FROM employee;
-
--- 행 갯수가 다른 컬럼을 같이 조회하면 오류
---SELECT ename, MIN(salary) FROM employee;
-
---SELECT ename, salary FROM employee HAVING salary=MIN(salary);
-
--- 데이터 그룹
-SELECT dno, ROUND(AVG(salary)) AS "평균급여" FROM employee GROUP BY dno;
-SELECT dno, job, ROUND(AVG(salary)) AS "평균급여" FROM employee GROUP BY dno, job ORDER BY dno ASC, job DESC;
-
--- 업무별 그룹화된 평균급여가 2000이상인 그룸의 급여 총액
---SELECT job, SUM(salary) FROM employee WHERE AVG(salary) >= 2000 GROUP BY job; 에러
-
-SELECT job, TRUNC(AVG(salary)), SUM(salary) FROM employee GROUP BY job HAVING AVG(salary) >= 2000;
-
--- 부서별 최고 급여가 3000이상인 부서의 번호와 해당 부서의 최고 급여를 구하세요.
-SELECT dno, MAX(salary) FROM employee GROUP BY dno HAVING MAX(salary)>=3000;
-
--- 매니저를 제외하고 급여 총액이 5000이상인 담당 업무별 급여 총액
-SELECT job, COUNT(job), SUM(salary) FROM employee WHERE job != 'MANAGER' GROUP BY job HAVING SUM(salary)>=5000;
-
---ROLLUP() 그룹합계에 전체합계 추가
-SELECT dno, SUM(salary) FROM employee GROUP BY ROLLUP(dno);
-SELECT job, dno, SUM(salary) FROM employee GROUP BY ROLLUP(job, dno);
-
--- 서브쿼리 (단일행)
-SELECT ename, salary FROM employee WHERE salary > (SELECT salary FROM employee WHERE ename = 'SCOTT');
-
-SELECT ename, job, salary FROM employee WHERE salary = (SELECT MIN(salary)FROM employee);
--- HAVING에도 서브쿼리 사용가능
-SELECT dno, MIN(salary) FROM employee GROUP BY dno;
-SELECT dno, MIN(salary) FROM employee GROUP BY dno HAVING MIN(salary) > (SELECT MIN(salary) FROM employee WHERE dno=30);
-
--- 서브쿼리 (다중행-결과값이 범위 or 여러개) ANY는 결과값 포함 - OR에 가깝다, ALL은 결과값 미포함 - AND에 가깝다
-SELECT * FROM employee WHERE job != 'SALESMAN' AND salary < ANY (SELECT salary FROM employee WHERE job = 'SALESMAN');
-SELECT * FROM employee WHERE job != 'SALESMAN' AND salary > ANY (SELECT salary FROM employee WHERE job = 'SALESMAN');
--- not -> != 과 <>이 같다.
-SELECT * FROM employee WHERE job != 'SALESMAN' AND salary < ALL (SELECT salary FROM employee WHERE job = 'SALESMAN');
-SELECT * FROM employee WHERE job <> 'SALESMAN' AND salary > ALL (SELECT salary FROM employee WHERE job = 'SALESMAN');
--- ANY = 는 IN과 같다 결과값중 하나라도 같은게 있으면 조회
 
 -----------------------------------------------------------------------------------------------------------------------
 --연습문제3
@@ -409,12 +173,13 @@ SELECT job, count(*) FROM employee GROUP BY job;
 
 --4. 관리자의수를나열하세요. 칼럼의별칭은COUNT(MANAGER)로출력하세요.
 SELECT COUNT('MANAGER') AS "COUNT(MANAGER)" FROM employee GROUP BY job HAVING job = 'MANAGER';
+SELECT COUNT(DISTINCT(manager)) FROM employee;
 
 --5. 급여최고액, 급여최저액의차액을출력하세요. 칼럼의별칭DIFFERENCE로지정하세요
 SELECT MAX(salary) - MIN(salary) AS "DIFFERENCE" FROM employee;
 
 --6. 직급별사원의최저급여를출력하세요. 관리자를알수없는사원및최저급여가2000미만인그룹은제외시키고급여에대한내림차순으로정렬하여출력하세요.
-SELECT job, MIN(salary) AS "최저급여" FROM employee WHERE manager is not null GROUP BY job HAVING MIN(salary) >= 2000 ORDER BY "최저급여";
+SELECT job, MIN(salary) AS "최저급여" FROM employee WHERE manager is not null GROUP BY job HAVING MIN(salary) >= 2000 ORDER BY "최저급여" DESC;
 
 --7. 각부서에대해부서번호, 사원수, 부서내의모든사원의평균급여를출력하시오, 칼럼의별칭은부서번호(DNO), 사원수(Numberof PeoPle), 평균급여(Salary)로지정하고평균급여는소수점2째자리에서반올림하세요.
 SELECT dno AS "부서번호(DNO)", COUNT(dno) AS "사원수(Numberof PeoPle)", ROUND(AVG(salary), 1) AS "평균급여(Salary)" FROM employee GROUP BY dno;
@@ -424,16 +189,21 @@ SELECT * FROM DEPARTMENT;
 SELECT DECODE(dno, 10, 'ACCOUNTING',
                    20, 'RESEARCH',
                    30, 'SALES',
-                   40, 'OPERATIONS') AS "부서번호이름",
+                   40, 'OPERATIONS') AS "Dname",
        DECODE(dno, 10, 'NEW YORK',
                    20, 'DALLAS',
                    30, 'CHICAGO',
-                   40, 'BOSTON') AS "지역명", COUNT(dno) AS "사원수", ROUND(AVG(salary)) AS "평균급여" FROM employee GROUP BY dno;
+                   40, 'BOSTON') AS "Location", COUNT(dno) AS "사원수", ROUND(AVG(salary)) AS "평균급여" FROM employee GROUP BY dno;
 
 --9. 업무를표시한다음해당업무에대해부서번호별급여및부서10,20,30의급여총액을각각출력하시오. 각칼럼의별칭은각각job, 부서10,부서20, 부서30, 총액으로지정하세요.
 SELECT job, dno AS "부서", SUM(salary) AS "총액" FROM employee GROUP BY job, dno ORDER BY job ASC;
 
-SELECT job, NVL(SUM(DECODE(dno, 10, salary)), 0) AS "부서10", NVL(SUM(DECODE(dno, 20, salary)), 0) AS "부서20", NVL(SUM(DECODE(dno, 30, salary)), 0) AS "부서30", SUM(salary) AS "총액" FROM employee GROUP BY job;
+SELECT job, NVL(SUM(DECODE(dno, 10, salary)), 0) AS "부서10", NVL(SUM(DECODE(dno, 20, salary)), 0) AS "부서20", NVL(SUM(DECODE(dno, 30, salary)), 0) AS "부서30", SUM(salary) AS "총액"FROM employee GROUP BY job;
+
+SELECT job, DECODE(dno, 10, SUM(salary)) AS "부서10",
+            DECODE(dno, 20, SUM(salary)) AS "부서20",
+            DECODE(dno, 30, SUM(salary)) AS "부서30",
+            SUM(salary) AS "총액" FROM employee GROUP BY dno, ROLLUP(job);
 
 
 -----------------------------------------------------------------------------------------------------------------------------------------------
@@ -475,14 +245,15 @@ SELECT eno, ename FROM employee WHERE dno IN (SELECT dno FROM employee WHERE ena
 
 --12. 부서위치가DALLAS인사원의이름과부서번호및담당업무를표시하세요
 SELECT * FROM DEPARTMENT;
-SELECT ename, dno, job FROM employee WHERE dno=20;
+SELECT ename, dno, job FROM employee WHERE dno=(SELECT dno FROM department WHERE loc = 'DALLAS');
 
 --13. KING에게보고하는사원의이름과급여를표시하세요
-
+SELECT * FROM employee;
+SELECT ename, salary FROM employee WHERE manager = (SELECT eno FROM employee WHERE ename = 'KING');
 
 --14. RESEARCH 부서의사원에대한부서번호, 사원번호및담당업무를출력하세요
 SELECT * FROM DEPARTMENT;
-SELECT ename, dno, eno, job FROM employee WHERE dno=20;
+SELECT ename, dno, eno, job FROM employee WHERE dno=(SELECT dno FROM department WHERE dname = 'RESEARCH');
 
 --15. 평균급여보다많은급여를받고이름에서M이포함된사원과같은부서에서근무하는사원의사원번호, 이름, 급여를출력하세요.
 SELECT ename, dno FROM employee WHERE salary >= (SELECT AVG(salary) FROM employee);
@@ -493,5 +264,44 @@ SELECT eno, ename, salary FROM employee WHERE salary >= (SELECT AVG(salary) FROM
 SELECT job, AVG(salary) FROM employee GROUP BY job HAVING AVG(salary) = (SELECT MIN(AVG(salary)) FROM employee GROUP BY job);
 
 --17. 부하직원을가진사원의사원번호와이름을출력하세요
-SELECT * FROM employee;
-SELECT eno, ename FROM employee WHERE eno IN (SELECT manager FROM employee WHERE manager IS NOT NULL);
+SELECT manager FROM employee WHERE manager IS NOT NULL;
+SELECT eno, ename, job FROM employee WHERE eno IN (SELECT manager FROM employee WHERE manager IS NOT NULL);
+
+--------------------------------------------------------------------------------------------------------------
+-- 연습문제 5. join
+--1. Equi조인을 사용하여 SCOTT 사원의 부서번호와 부서이름을 출력하세요.
+SELECT ename, e.dno, dname FROM employee e, department d WHERE e.dno = d.dno AND e.ename = 'SCOTT';
+SELECT ename, employee.dno, dname FROM employee JOIN department ON employee.dno = department.dno WHERE employee.ename = 'SCOTT';
+
+--2. Inner 조인과 on연산자를 사용하여 사원이름과 함께 그 사원이 소속된 부서이름과 지역명을 출력하세요.
+SELECT ename, dname, loc FROM employee e JOIN department d ON e.dno = d.dno;
+
+--3. INNER 조인 Using 연산자를 사용하여 10번 부서에 속하는 모든 담당업무의 고유 목록을 부서의 지역명을 포함하여 출력하세요.
+SELECT dno, job, loc FROM employee JOIN department USING(dno) WHERE dno = 10;
+
+--4. Natural조인을 사용하여 커미션을 받는 모든 사원의 이름, 부서이름, 지역명을 출력하세요
+SELECT ename, dname, loc FROM employee NATURAL JOIN department WHERE commission IS NOT NULL;
+
+--5. Equal 조인과 Wild카드를 사용해서 이름에 A가 포함된 모든 사원의 이름과 부서명을 출력하세요,
+SELECT ename, dname FROM employee e, department d WHERE e.dno = d.dno AND e.ename LIKE '%A%';
+
+--6. Natural 조인을 사용하여 NEW York에 근무하는 모든 사원의 이름, 업무 부서번호 및 부서명을 출력하세요.
+SELECT ename, dno, dname FROM employee NATURAL JOIN department WHERE loc = 'NEW YORK';
+
+--7. Self Join을 사용하여 사원의 이름및 사원 번호를 관리자 이름 및 관리자 번호와 함께 출력하세요. 각 열의 별칭은 사원이름(Employee) 사원번호(emp#) 관리자이름(Manager) 관리자번호(Mgr#)
+SELECT emp.ename AS "사원이름", emp.eno AS "사원번호", ma.ename AS "관리자이름", ma.eno AS "관리자번호" FROM employee emp, employee ma WHERE emp.manager = ma.eno;  
+
+--8. Outter 조인 self 조인을 사용하여 관리자가 없는 사원을 포함하여 사원번호를 기준으로 내림차순 정렬하여 클릭하세요 각 열의 별칭은 사원이름(Employee) 사원번호(emp#) 관리자이름(Manager) 관리자번호(Mgr#)
+SELECT emp.ename AS "사원이름", emp.eno AS "사원번호", ma.ename AS "관리자이름", ma.eno AS "관리자번호" FROM employee emp, employee ma WHERE emp.manager = ma.eno(+) ORDER BY emp.eno DESC;
+
+--9. Self조인을 사용하여 지정한 사원(SCOTT)의 이름, 부서번호, 지정한 사원과 동일한 부서에서 근무하는 사원을 출력하세요 각 열의 별칭은 이름, 부서번호, 동료로 지정하세요
+SELECT em.ename AS "이름", em.dno AS "부서번호", ma.ename AS "동료" FROM employee em, employee ma 
+WHERE em.ename = 'SCOTT' AND ma.dno = em.dno AND ma.ename != 'SCOTT';
+
+--10. Self 조인을 사용하여 WARD 사원보다 늦게 입사한 사원의 이름과 입사일을 출력하세요.
+SELECT hiredate FROM employee WHERE ename = 'WARD';
+SELECT ename, hiredate FROM employee WHERE hiredate > (SELECT hiredate FROM employee WHERE ename = 'WARD');
+SELECT e2.ename, e2.hiredate FROM employee e1, employee e2 WHERE e1.ename = 'WARD' AND e1.hiredate < e2.hiredate;
+
+--11. Self조인을 사용하여 관리자보다 먼저 입사한모든 사원의 이름 및 입사일을 관리자의 이름 및 입사입과 함께 출력하세요. 각 열의 별칭은 사원이름(Ename) 사원입사일(HIERDATE) 관리자 이름(Ename) 관리자 입사입(HIERDATE)로 출력하세요.
+SELECT e.ename AS "사원이름", e.hiredate AS "사원입사일", ee.ename AS "관리자이름", ee.hiredate AS "관리자입사일" FROM employee e, employee ee WHERE e.manager = ee.eno AND e.hiredate < ee.hiredate;
