@@ -222,16 +222,20 @@ SELECT job, ROUND(AVG(salary)) AS "평균급여" FROM employee GROUP BY job HAVING A
 
 --5. 각부서의최소급여를받는사원이름,급여, 부서번호를표시하세요.
 SELECT dno, MIN(salary) FROM employee GROUP BY dno;
-SELECT ename, salary, dno FROM employee WHERE salary = ANY((SELECT MIN(salary) FROM employee GROUP BY dno));
+SELECT ename, salary, dno FROM employee WHERE salary = ANY(SELECT MIN(salary) FROM employee GROUP BY dno);
+SELECT ename, salary, dno FROM employee WHERE salary IN (SELECT MIN(salary) FROM employee GROUP BY dno);
 
 --6. 담당업무가분석가(ANALYST)인사원보다급여가적으면서업무가분석가(ANALYST)아닌사원(사원번호, 이름, 담당업무,급여)들을표시하세요.
-SELECT eno, ename, job, salary FROM employee WHERE job != 'ANALYST' AND salary < ALL (SELECT salary FROM employee WHERE job = 'ANALYST');
+SELECT eno, ename, job, salary FROM employee WHERE salary < ALL (SELECT salary FROM employee WHERE job = 'ANALYST') AND job <> 'ANALYST';
+-- 2명의 ANALYST가 같은 급여를 받고 있고 그것보다 급여가 높은 사람을 검색했기 때문에 and 뒤의 job 확인부분은 생략 가능
 
 --7. 매니저없는사원의이름을표시하세요.
 SELECT ename FROM employee WHERE manager IS NULL;
+SELECT ename FROM employee WHERE eno IN (SELECT eno FROM employee WHERE manager IS NULL);
 
 --8. 매니저있는사원의이름을표시하세요.
 SELECT ename FROM employee WHERE manager IS NOT NULL;
+SELECT ename FROM employee WHERE eno IN (SELECT eno FROM employee WHERE manager IS NOT NULL);
 
 --9. BLAKE와동일한부서에속한사원의이름과입사일을표시하는질의를작성하세요.(단BLAKE는제외)
 SELECT ename, dno, hiredate FROM employee WHERE ename != 'BLAKE' AND dno = (SELECT dno FROM employee WHERE ename = 'BLAKE');

@@ -140,3 +140,162 @@ DELETE FROM emp6 WHERE dno IS NULL;
 COMMIT;
 
 SELECT * FROM emp6;
+
+---------------------------------------------------------------------------------
+-- 데이터 제어
+-- TABLE 생성
+CREATE TABLE dept2(dno NUMBER(2), dname VARCHAR2(14), loc VARCHAR2(13));
+
+SELECT * FROM dept2;
+-- Oracle에서 테이블 정보 보기
+DESC dept2;
+
+-- 컬럼이 수식으로 들어갈땐 반드시 별칭을 지어준다.
+CREATE TABLE dept3 AS SELECT eno, ename, salary*12 AS "ANI_SAL" FROM employee WHERE dno = 20;
+SELECT * FROM dept3;
+
+-- ALTER - 컬럼 생성
+ALTER TABLE dept3 ADD (birth date);
+ALTER TABLE dept3 ADD (addr VARCHAR2(100), phone VARCHAR2(13));
+
+DESC dept3;
+
+-- ALTER - 컬럼 변경
+ALTER TABLE dept3 MODIFY addr VARCHAR2(500);
+-- 컬럼 이름 변경
+ALTER TABLE dept3 RENAME COLUMN addr TO address;
+
+-- 테이블 이름 바꾸기
+RENAME dept3 TO dept30;
+DESC dept30;
+
+-- 컬럼삭제
+ALTER TABLE dept30 DROP COLUMN phone;
+-- 칼럼 숨기기
+ALTER TABLE dept30 SET UNUSED (address);
+-- 숨긴 칼럼들 삭제
+ALTER TABLE dept30 DROP UNUSED COLUMNS;
+-- 테이블 삭제
+DROP TABLE dept30;
+
+-- 테이블 복사해오기
+CREATE TABLE dept3 AS SELECT * FROM employee;
+-- 복사해온 테이블의 모든 레코드 삭제
+TRUNCATE TABLE dept3;
+
+---------------------------------------------------------------------------------
+-- 제약조건
+-- not null
+CREATE TABLE customer(id varchar2(20) NOT NULL, pwd varchar2(20) NOT NULL, name varchar2(20) NOT NULL);
+
+DESC customer;
+-- NULL값이 있으므로 에러
+-- INSERT INTO customer VALUES('asdf', '1234', NULL);
+-- unique 주로 id같은데 사용 중복x
+CREATE TABLE customer(id varchar2(20) UNIQUE, pwd varchar(20) NOT NULL, name varchar2(20) NOT NULL);
+
+DESC customer;
+-- 데이터 입력
+INSERT INTO customer VALUES('asdf', '1234', 'kin');
+-- UNIQUE로 설정해준 ID가 겹쳐서 오류
+INSERT INTO customer VALUES('asdf', '5678', 'park');
+
+DROP TABLE customer;
+-- UNIQUE와 NOT NULL 동시에 = PRIMARY KEY (기본키) - 테이블에 한개만 존재해야한다. 모든 테이블에 반드시 존재해야 한다.
+--CREATE TABLE customer(id varchar2(20) UNIQUE NOT NULL, pwd varchar(20) NOT NULL, name varchar2(20) NOT NULL);
+CREATE TABLE customer(id varchar2(20) CONSTRAINT customer_id_pk PRIMARY KEY, pwd varchar(20) NOT NULL, name varchar2(20) NOT NULL);
+-- 데이터 입력
+INSERT INTO customer VALUES('asdf', '1234', 'hong');
+INSERT INTO customer VALUES('asdf', '5678', 'kim');     -- 기본키인 아이디가 겹쳐서 오류
+INSERT INTO customer VALUES(null, '9876', 'Lee');       -- 기본키인 아이디에 null이 들어가서 오류
+
+DROP TABLE customer;
+-- CHECK
+-- 제약조건 이름을 마지막에 써줄수도 있다. 대신 제약조건 뒤에 (컬럼명)을 입력해주어야 한다.
+CREATE TABLE customer(id varchar2(20), pwd varchar(20) NOT NULL, name varchar2(20) NOT NULL,
+                    jumsu number(3) CHECK(0<=jumsu AND jumsu<=100), CONSTRAINT customer_id_pk PRIMARY KEY(id));
+
+-- 데이터 입력
+INSERT INTO customer VALUES('asdf', '1234', 'kim', 65);
+INSERT INTO customer VALUES('qwer', '1234', 'park', 123); -- jumsu 컬럼 부분이 check조건 범위를 벗어나서 오류
+
+DROP TABLE customer;
+
+-- DEFAULT
+CREATE TABLE customer(id varchar2(20), pwd varchar(20) NOT NULL, name varchar2(20) DEFAULT '홍길동',
+                    CONSTRAINT customer_id_pk PRIMARY KEY(id));
+
+INSERT INTO customer VALUES('asdf', '1234', 'park');
+INSERT INTO customer VALUES('qwer', '1234', null);
+INSERT INTO customer(id, pwd) VALUES('zxcv', '1234');
+
+SELECT * FROM customer;
+                    
+-- FOREIGN KEY
+CREATE TABLE student(stuno varchar2(20) CONSTRAINT student_sno_pk PRIMARY KEY,
+            name varchar2(20) CONSTRAINT student_name_nn NOT NULL,
+            majar varchar2(20));
+
+CREATE TABLE reqistration(enrollid varchar2(20) CONSTRAINT registration_id_pk PRIMARY KEY,
+            stuno varchar2(20), 
+            subject varchar2(20) CONSTRAINT registration_subject_nn NOT NULL,
+            CONSTRAINT registration_stuno_fk FOREIGN KEY(stuno) REFERENCES student(stuno));
+            
+INSERT INTO student VALUES('s001', 'kim', 'math');
+INSERT INTO student VALUES('s002', 'smith', 'english');
+INSERT INTO student VALUES('s003', 'lee', 'korean');
+
+SELECT * FROM student;
+
+INSERT INTO reqistration VALUES('E001','s001','대수학');
+INSERT INTO reqistration VALUES('E002','s004','미분기하학'); -- 외래키의 부모테이블에 s004라는 데이터가 없기때문에 오류
+
+SELECT * FROM reqistration;
+
+---------------------------------------------------------------------------------
+-- 제약조건 변경
+CREATE TABLE stu_copy AS SELECT * FROM student;
+
+CREATE TABLE reg_copy AS SELECT * FROM reqistration;
+-- 추가
+ALTER TABLE reg_copy
+ADD CONSTRAINT reg_copy_stuno_fk FOREIGN KEY(stuno) REFERENCES student(stuno);
+-- 추가2
+ALTER TABLE stu_copy
+ADD CONSTRAINT stu_copy_stuno_pk PRIMARY KEY(stuno);
+-- 추가3
+ALTER TABLE reg_copy
+ADD CONSTRAINT reg_copy_enrollid_pk PRIMARY KEY(enrollid);
+-- 변경
+ALTER TABLE stu_copy
+MODIFY majar CONSTRAINT stu_copy_major_nn NOT NULL; -- 오타 major로 추가했어야 했다
+-- 제거
+ALTER TABLE stu_copy
+DROP PRIMARY KEY;   -- PRIMARY KEY 는 하나밖에 없기때문에 이름을 지정해주지 않아도 괜찮다.
+-- 제거2 제약조건 이름을 통해 삭제
+ALTER TABLE stu_copy
+DROP CONSTRAINT stu_copy_major_nn;
+
+---------------------------------------------------------------------------------
+-- 시퀀스
+CREATE SEQUENCE seq_sample START WITH 10 INCREMENT BY 10;   -- 10부터 시작하고 10씩 증가
+
+SELECT sequence_name, min_value, max_value, increment_by, cycle_flag FROM user_sequences;
+-- 시퀀스의 현재값 알아보기
+SELECT seq_sample.currval FROM dual;    -- 한번도 작동된 적이 없기때문에 에러가 난다.
+-- 시퀀스의 다음값 알아보기 - 가장 많이 사용한다.
+SELECT seq_sample.nextval FROM dual;
+
+CREATE TABLE member(m_info number PRIMARY KEY, m_id varchar2(20) NOT NULL, m_pwd varchar2(100) NOT NULL);
+-- 시퀀스 기본값 생성
+CREATE SEQUENCE member_seq;
+-- 시퀀스 적용
+INSERT INTO member VALUES(member_seq.nextval,'asdf','1234');
+
+SELECT * FROM member;
+-- 시퀀스 변경
+ALTER SEQUENCE member_seq CYCLE;
+
+SELECT * FROM user_sequences;
+
+-- CREATE SEQUENCE 테이블명_seq NOCACHE;  --기본적인 생성

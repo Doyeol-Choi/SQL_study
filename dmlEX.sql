@@ -101,28 +101,49 @@ DELETE FROM dept_copy WHERE dno IN (10, 40);
 ---------------------------------------------------------------------------------
 -- 연습문제 7. 테이블 제어
 --1. 다음표에명시된대로DEPT 테이블을생성하세요.
-
+CREATE TABLE dept (dno NUMBER(2), dname VARCHAR2(14), loc VARCHAR2(13));
 
 --2. 다음표에명시된대로EMP 테이블을생성하세요.
-
+CREATE TABLE emp (eno NUMBER(4), ename VARCHAR2(10), dno NUMBER(2));
 
 --3. 긴이름을저장할수있도록EMP테이블을수정하세요.(ENAME칼럼)
-
+ALTER TABLE emp MODIFY ename VARCHAR2(25);
 
 --4. EMPLOYEE테이블을복사해서EMPLOYEE2란이름의테이블을생성하되사원번호, 이름, 급여, 부서번호칼럼만복사하고새로생성된칼럼명을각각EMP_ID, NAME, SAL, DEPT_ID로지정하세요.
-
+CREATE TABLE employee2 AS SELECT eno AS "EMP_ID", ename AS "NAME", salary AS "SAL", dno AS "DEPT_ID" FROM employee;
 
 --5. EMP 테이블을삭제하세요
-
+DROP TABLE emp;
 
 --6. EMPLOYEE2테이블의이름을EMP로변경하세요
-
+RENAME employee2 TO emp;
 
 --7. DEPT 테이블에서DNAME 칼럼을제거하세요
-
+ALTER TABLE dept DROP COLUMN dname;
 
 --8. DEPT 테이블에서LOC칼럼을UNUSED로표시하세요.
-
+ALTER TABLE dept SET UNUSED (loc);
 
 --9. UNUSED 칼럼을모두제거하세요.
+ALTER TABLE dept DROP UNUSED COLUMNS;
 
+---------------------------------------------------------------------------------
+-- 연습문제 8. 데이터 무결성, 제약조건
+--1. Employee테이블의구조를복사하여EMP_SAMPLE란이름의테이블을만드세요. 사원테이블의사원번호칼럼에테이블레벨로primarykey제약조건을지정하되제약조건이름은my_emp_pk로지정하세요.
+SELECT * FROM employee;
+SELECT * FROM emp_sample;
+CREATE TABLE emp_sample AS SELECT * FROM employee WHERE 0=1;
+ALTER TABLE emp_sample MODIFY eno CONSTRAINT my_emp_pk PRIMARY KEY;
+
+--2. department테이블의구조를복사하여dept_sample이란테이블을만드세요. dept_sample의부서번호칼럼에테이블레벨로primarykey제약조건을지정하되제약조건이름은my_dept_pk로지정하세요.
+CREATE TABLE dept_sample AS SELECT * FROM department WHERE 0=1;
+ALTER TABLE dept_sample ADD CONSTRAINT my_dept_pk PRIMARY KEY(dno);
+
+--3.사원테이블의부서번호칼럼에존재하지않는부서의사원이배정되지않도록외래키제약조건을지정하되제약조건이름은my_emp_dept_fk로지정하세요.
+ALTER TABLE emp_sample ADD CONSTRAINT my_emp_dept_fk FOREIGN KEY(dno) REFERENCES dept_sample(dno);
+
+--4. 사원테이블의커미션컬럼에0보다큰값만을입력할수있도록제약조건을지정하세요
+ALTER TABLE emp_sample MODIFY commission CHECK(0 < commission);
+
+---------------------------------------------------------------------------------
+-- 연습문제 9. 뷰
