@@ -269,7 +269,7 @@ SELECT job, AVG(salary) FROM employee GROUP BY job HAVING AVG(salary) = (SELECT 
 
 --17. 부하직원을가진사원의사원번호와이름을출력하세요
 SELECT manager FROM employee WHERE manager IS NOT NULL;
-SELECT eno, ename, job FROM employee WHERE eno IN (SELECT manager FROM employee WHERE manager IS NOT NULL);
+SELECT eno, ename, job FROM employee WHERE eno IN (SELECT manager FROM employee);
 
 --------------------------------------------------------------------------------------------------------------
 -- 연습문제 5. join

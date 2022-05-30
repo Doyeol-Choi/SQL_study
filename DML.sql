@@ -207,7 +207,7 @@ CREATE TABLE customer(id varchar2(20) CONSTRAINT customer_id_pk PRIMARY KEY, pwd
 -- 데이터 입력
 INSERT INTO customer VALUES('asdf', '1234', 'hong');
 INSERT INTO customer VALUES('asdf', '5678', 'kim');     -- 기본키인 아이디가 겹쳐서 오류
-INSERT INTO customer VALUES(null, '9876', 'Lee');       -- 기본키인 아이디에 null이 들어가서 오류
+INSERT INTO customer VALUES(null, '9876', 'Lee');       -- 기본키인 아이디에 null 이 들어가서 오류
 
 DROP TABLE customer;
 -- CHECK
@@ -299,3 +299,14 @@ ALTER SEQUENCE member_seq CYCLE;
 SELECT * FROM user_sequences;
 
 -- CREATE SEQUENCE 테이블명_seq NOCACHE;  --기본적인 생성
+
+---------------------------------------------------------------------------------
+-- 인덱스
+-- 이미 생성된 인덱스 정보
+SELECT index_name, table_name, column_name FROM user_ind_columns WHERE table_name IN ('EMPLOYEE', 'DEPARTMENT');
+-- 인덱스 생성
+CREATE INDEX idx_employee_ename ON employee(ename);
+-- 인덱스 삭제
+DROP INDEX idx_employee_ename;
+
+SELECT * FROM employee;

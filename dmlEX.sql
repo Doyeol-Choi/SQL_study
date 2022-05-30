@@ -146,4 +146,17 @@ ALTER TABLE emp_sample ADD CONSTRAINT my_emp_dept_fk FOREIGN KEY(dno) REFERENCES
 ALTER TABLE emp_sample MODIFY commission CHECK(0 < commission);
 
 ---------------------------------------------------------------------------------
--- 연습문제 9. 뷰
+-- 연습문제 10. 시퀀스
+--1. 사원 테이블의 사원번호가 자동으로 생성되도록 시퀀스를 생성하시오. (시작값 : 1, 증가값 :1 최대값:100000)
+CREATE SEQUENCE ex_seq START WITH 1 INCREMENT BY 1 MAXVALUE 100000;
+
+--2. 사원번호를 시퀀스로부터 발급받아서 오른쪽 테이블에 데이터를 입력하세요.
+--1)사원 이름: Julia, 입사일: sysdate)
+--2)사원 이름: Alice 입사입: 2020/12/31
+CREATE TABLE emp01(empno number(4), ename varchar2(10), hiredate date);
+SELECT * FROM emp01;
+INSERT INTO emp01 VALUES(ex_seq.nextval, 'Julia', sysdate);
+INSERT INTO emp01 VALUES(ex_seq.nextval, 'ALICE', '2022/12/31');
+
+--3. EMP01테이블의 이름 칼럼을 인덱스로 설정하되 인덱스 이름을 IDX_EMP01_EName로 지정하세요.
+CREATE INDEX IDX_EMP01_EName ON emp01(ename);
