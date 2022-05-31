@@ -284,7 +284,7 @@ SELECT ename, dname, loc FROM employee e JOIN department d ON e.dno = d.dno;
 SELECT dno, job, loc FROM employee JOIN department USING(dno) WHERE dno = 10;
 
 --4. Natural조인을 사용하여 커미션을 받는 모든 사원의 이름, 부서이름, 지역명을 출력하세요
-SELECT ename, dname, loc FROM employee NATURAL JOIN department WHERE commission IS NOT NULL;
+SELECT ename, dname, loc FROM employee NATURAL JOIN department WHERE commission IS NOT NULL AND commission > 0;
 
 --5. Equal 조인과 Wild카드를 사용해서 이름에 A가 포함된 모든 사원의 이름과 부서명을 출력하세요,
 SELECT ename, dname FROM employee e, department d WHERE e.dno = d.dno AND e.ename LIKE '%A%';
@@ -297,10 +297,11 @@ SELECT emp.ename AS "사원이름", emp.eno AS "사원번호", ma.ename AS "관리자이름",
 
 --8. Outter 조인 self 조인을 사용하여 관리자가 없는 사원을 포함하여 사원번호를 기준으로 내림차순 정렬하여 클릭하세요 각 열의 별칭은 사원이름(Employee) 사원번호(emp#) 관리자이름(Manager) 관리자번호(Mgr#)
 SELECT emp.ename AS "사원이름", emp.eno AS "사원번호", ma.ename AS "관리자이름", ma.eno AS "관리자번호" FROM employee emp, employee ma WHERE emp.manager = ma.eno(+) ORDER BY emp.eno DESC;
+SELECT emp.ename AS "사원이름", emp.eno AS "사원번호", ma.ename AS "관리자이름", ma.eno AS "관리자번호" FROM employee emp LEFT OUTER JOIN employee ma ON emp.manager = ma.eno ORDER BY emp.eno DESC;
 
 --9. Self조인을 사용하여 지정한 사원(SCOTT)의 이름, 부서번호, 지정한 사원과 동일한 부서에서 근무하는 사원을 출력하세요 각 열의 별칭은 이름, 부서번호, 동료로 지정하세요
-SELECT em.ename AS "이름", em.dno AS "부서번호", ma.ename AS "동료" FROM employee em, employee ma 
-WHERE em.ename = 'SCOTT' AND ma.dno = em.dno AND ma.ename != 'SCOTT';
+SELECT em.ename AS "이름", em.dno AS "부서번호", ee.ename AS "동료" FROM employee em, employee ee WHERE em.ename = 'SCOTT' AND em.dno = ee.dno AND ee.ename != 'SCOTT';
+SELECT em.ename AS "이름", em.dno AS "부서번호", ee.ename AS "동료" FROM employee em, employee ee WHERE em.ename = 'SCOTT' AND em.dno = ee.dno AND ee.ename <> 'SCOTT';
 
 --10. Self 조인을 사용하여 WARD 사원보다 늦게 입사한 사원의 이름과 입사일을 출력하세요.
 SELECT hiredate FROM employee WHERE ename = 'WARD';
