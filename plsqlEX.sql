@@ -9,6 +9,15 @@ BEGIN
     IF ex_dno is not null THEN
         SELECT dname INTO ex_dname FROM department WHERE dno=ex_dno;
     END IF;
+    -- IF ex_dno = 10 THEN
+    --    ex_dname := 'ACCOUNTING';
+    -- ELSIF ex_dno=20 THEN
+    --    ex_dname := 'RESEARCH';
+    -- ELSIF ex_dno=20 THEN
+    --    ex_dname := 'SALES';
+    -- ELSE THEN
+    --    ex_dname := 'OPERATIONS';
+    -- END IF;
     dbms_output.put_line('부서번호 : '||ex_dno||' 부서명 : '||ex_dname);
 END;
 
@@ -20,9 +29,10 @@ BEGIN
     LOOP
         isum := isum + i;
         i := i + 1;
-        IF i > 10 THEN
-            EXIT;
-        END IF;
+--        IF i > 10 THEN
+--            EXIT;
+--        END IF;
+        EXIT WHEN i > 10;
     END LOOP;
     dbms_output.put_line('1~10 까지의 합 : '||isum);
 END;
@@ -51,24 +61,35 @@ BEGIN
 END;
 
 --5. 사원테이블에서커미션이NULL아닌상태의사원번호, 이름, 급여를이름기준으로오름차순으로정렬한결과를출력하세요.
+--DECLARE
+--    e_emp employee%rowtype;
+--    CURSOR ex_emp IS SELECT eno, ename, salary FROM employee WHERE commission is not null ORDER BY ename ASC;
+--BEGIN
+--    dbms_output.put_line('사원번호  이름  급여');
+--    dbms_output.put_line('------------------------');
+--    
+--    OPEN ex_emp;
+--        LOOP
+--            FETCH ex_emp INTO e_emp.eno, e_emp.ename, e_emp.salary;
+--            IF ex_emp%NOTFOUND THEN  -- 더이상 꺼낼게 없다면
+--                EXIT;
+--            END IF;
+--            dbms_output.put_line(e_emp.eno||'   '||e_emp.ename||'   '||e_emp.salary);
+--        END LOOP;
+--    CLOSE ex_emp;
+--END;
+
 DECLARE
-    e_emp employee%rowtype;
-    CURSOR ex_emp IS SELECT eno, ename, salary FROM employee WHERE commission is not null ORDER BY ename ASC;
+    v_emp employee%rowtype;
+    CURSOR c_emp IS SELECT * FROM employee WHERE commission is not null ORDER BY ename ASC;
 BEGIN
     dbms_output.put_line('사원번호  이름  급여');
     dbms_output.put_line('------------------------');
-    
-    OPEN ex_emp;
-        LOOP
-            FETCH ex_emp INTO e_emp.eno, e_emp.ename, e_emp.salary;
-            IF ex_emp%NOTFOUND THEN  -- 더이상 꺼낼게 없다면
-                EXIT;
-            END IF;
-            dbms_output.put_line(e_emp.eno||'   '||e_emp.ename||'   '||e_emp.salary);
-        END LOOP;
-    CLOSE ex_emp;
+    FOR v_emp IN c_emp LOOP
+         dbms_output.put_line(v_emp.eno||'   '||v_emp.ename||'   '||v_emp.salary);
+    END LOOP;
 END;
-
+    
 --6. 다음과같은테이블(Student)을만들고데이터를입력한다.
 CREATE TABLE student(
                 sid number PRIMARY KEY,

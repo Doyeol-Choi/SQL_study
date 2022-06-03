@@ -164,7 +164,9 @@ CREATE SEQUENCE ex_seq START WITH 1 INCREMENT BY 1 MAXVALUE 100000;
 CREATE TABLE emp01(empno number(4), ename varchar2(10), hiredate date);
 SELECT * FROM emp01;
 INSERT INTO emp01 VALUES(ex_seq.nextval, 'Julia', sysdate);
-INSERT INTO emp01 VALUES(ex_seq.nextval, 'ALICE', '2022/12/31');
+INSERT INTO emp01 VALUES(ex_seq.nextval, 'ALICE', TO_DATE('2020/12/31', 'YYYY/MM/DD'));
 
 --3. EMP01테이블의 이름 칼럼을 인덱스로 설정하되 인덱스 이름을 IDX_EMP01_EName로 지정하세요.
 CREATE INDEX IDX_EMP01_EName ON emp01(ename);
+
+SELECT * FROM user_ind_columns WHERE table_name IN ('EMP01');
